@@ -48,7 +48,7 @@ function Header() {
       </h1>
 
       <p className="text-zinc-300 text-base">
-        Welcome To{" "}
+        Welcome To BrownWatersDAO{" "}
         <code className="bg-zinc-800 text-zinc-300 px-2 rounded py-1 text-sm mx-1">
           The Home of $BWP
         </code>{" "}

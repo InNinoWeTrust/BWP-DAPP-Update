@@ -1,13 +1,53 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ConnectButton } from "thirdweb/react";
 import thirdwebIcon from "public/brownwatersproductions Complete.png";
 import { client } from "./client";
 import { polygon } from "thirdweb/chains";
+import { defineChain } from "thirdweb";
+import { inAppWallet, smartWallet } from "thirdweb/wallets";
 
-// Home Component
+const chain = defineChain(137);
+
+/ Home Component
 export default function Home() {
+  const [smartAccount, setSmartAccount] = useState<any>(null);
+  const [personalAccount, setPersonalAccount] = useState<any>(null);
+
+  useEffect(() => {
+    async function setupWallet() {
+      try {
+        // Connect the personal wallet
+        const personalWallet = inAppWallet();
+        const connectedPersonalAccount = await personalWallet.connect({
+          client,
+          chain,
+          strategy: "google",
+        });
+        setPersonalAccount(connectedPersonalAccount);
+
+        // Connect the Smart Account
+        const wallet = smartWallet({
+          chain, // the chain where your account will be or is deployed
+          factoryAddress: "0x71A54d6f0D219568113D37FC12Fc91E8Dfe4F846", // your own deployed account factory address
+          gasless: true, // enable or disable gasless transactions
+        });
+        const connectedSmartAccount = await wallet.connect({
+          client,
+          personalWallet,
+        });
+        setSmartAccount(connectedSmartAccount);
+      } catch (error) {
+        console.error("Failed to set up wallet:", error);
+      }
+    }
+
+    // Initialize wallet setup when component mounts
+    setupWallet();
+  }, []);
+
   return (
     <main className="p-4 pb-10 min-h-[100vh] flex items-center justify-center container max-w-screen-lg mx-auto">
       <div className="py-20">
@@ -48,9 +88,9 @@ function Header() {
       </h1>
 
       <p className="text-zinc-300 text-base">
-        Welcome To BrownWatersDAO{" "}
+        Welcome To{" "}
         <code className="bg-zinc-800 text-zinc-300 px-2 rounded py-1 text-sm mx-1">
-          The Home of $BWP
+          The Home of {" "}$BWP
         </code>{" "}
         Brownie Points Ecosystem.
       </p>
@@ -98,8 +138,7 @@ const resources = [
   {
     title: "Linktree",
     href: "https://linktr.ee/brownwatersdao",
-    description: "Find more Brown Waters Productions resources on Linktree.",
-  },
+    description: "Book an Appointment for one of our Many Services"
 ];
 
 // ThirdwebResources Component
